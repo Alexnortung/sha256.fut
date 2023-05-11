@@ -21,6 +21,8 @@ def get_padding_for_message [n] (message: [n]u8): i64 =
   let blocks = (n + 1 + end_size + block_size - 1) / block_size
   in blocks * block_size
 
+def pad_message_simple [n] (message: [n]u8): []u8 =
+  pad_message message (get_padding_for_message message)
 
 entry pad_message_entry [n] (message: [n]u8): []u8 =
   pad_message message (get_padding_for_message message)
