@@ -1,0 +1,4 @@
+package github.com/alexnortung/sha256.fut
+
+require {
+}

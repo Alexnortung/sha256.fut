@@ -1,29 +1,38 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
-    systems.url = "github:nix-systems/default";
-    devenv.url = "github:cachix/devenv";
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, devenv, systems, ... } @ inputs:
-    let
-      forEachSystem = nixpkgs.lib.genAttrs (import systems);
-    in
-    {
-      devShells = forEachSystem
-        (system:
-          let
-            pkgs = nixpkgs.legacyPackages.${system};
-          in
-          {
-            default = devenv.lib.mkShell {
-              inherit inputs pkgs;
-              modules = [
-                {
-                  packages = [ pkgs.futhark ];
-                }
-              ];
-            };
-          });
-    };
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+    ...
+  } @ inputs:
+    flake-utils.lib.eachDefaultSystem (system: let
+      pkgs = import nixpkgs {inherit system;};
+    in {
+      checks = {
+        default = pkgs.stdenv.mkDerivation {
+          name = "sha256.fut-checks";
+          buildInputs = [pkgs.futhark];
+
+          src = ./.;
+
+          buildPhase = ''
+            futhark test -c --no-terminal ./lib/github.com/alexnortung/sha256.fut/
+          '';
+
+          installPhase = ''
+            mkdir -p $out
+          '';
+        };
+      };
+      devShells = {
+        default = pkgs.mkShell {
+          buildInputs = [pkgs.futhark];
+        };
+      };
+    });
 }
