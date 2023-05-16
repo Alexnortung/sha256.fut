@@ -13,3 +13,5 @@
 
 .direnv
 .devenv
+
+lib/github.com/alexnortung/data/
