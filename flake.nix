@@ -21,7 +21,7 @@
           src = ./.;
 
           buildPhase = ''
-            futhark test -c --no-terminal ./lib/github.com/alexnortung/sha256.fut/
+            futhark test -c --no-terminal --exclude=no_test ./lib/github.com/alexnortung/sha256.fut/ ./tests/
           '';
 
           installPhase = ''
