@@ -18,8 +18,8 @@ def create_message_schedules [n] (message: [n]u8) : []MessageSchedule =
   ) schedule_messages
   let schedules = loop newSchedules = schedules for i in 16..<64 do
     map (\schedule ->
-      let s0 = (rotate_right schedule[i-15] 7) ^ (rotate_right schedule[i-15] 18) ^ (schedule[i-15] >> 3)
-      let s1 = (rotate_right schedule[i-2] 17) ^ (rotate_right schedule[i-2] 19) ^ (schedule[i-2] >> 10)
+      let s0 = (rotate_right_unsafe schedule[i-15] 7) ^ (rotate_right_unsafe schedule[i-15] 18) ^ (schedule[i-15] >> 3)
+      let s1 = (rotate_right_unsafe schedule[i-2] 17) ^ (rotate_right_unsafe schedule[i-2] 19) ^ (schedule[i-2] >> 10)
       let newValue = schedule[i-16] + s0 + schedule[i-7] + s1
       -- TODO: avoid copying - maybe use map to get the new values, then scatter the values with scatter2d
       in (copy schedule) with [i] = newValue
@@ -63,10 +63,10 @@ def compress (message_schedules: []MessageSchedule): Digest =
     ]
     let hash_values = loop hash_values = hash_values for i in 0..<64 do
       let {a, b, c, d, e, f, g, h} = hash_values
-      let s1 = (rotate_right e 6) ^ (rotate_right e 11) ^ (rotate_right e 25)
+      let s1 = (rotate_right_unsafe e 6) ^ (rotate_right_unsafe e 11) ^ (rotate_right_unsafe e 25)
       let choice = (e & f) ^ ((!e) & g)
       let temp1 = h + s1 + choice + k[i] + schedule[i]
-      let s0 = (rotate_right a 2) ^ (rotate_right a 13) ^ (rotate_right a 22)
+      let s0 = (rotate_right_unsafe a 2) ^ (rotate_right_unsafe a 13) ^ (rotate_right_unsafe a 22)
       let majority = (a & b) ^ (a & c) ^ (b & c)
       let temp2 = s0 + majority
       in {

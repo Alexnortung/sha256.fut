@@ -27,7 +27,9 @@ entry multi_sha256 [n_strings] [m_lengths] (strings: [n_strings][m_lengths]u8): 
 -- entry: multi_sha256
 -- random input { [100][30]u8 }
 -- random input { [1000][30]u8 }
+-- compiled random input { [1000000][30]u8 }
+-- compiled random input { [2000000][30]u8 }
+-- compiled random input { [4000000][30]u8 }
 -- compiled random input { [10][2000000]u8 }
--- compiled random input { [2000000][10]u8 }
 -- compiled random input { [1000][300]u8 }
 -- compiled random input { [100000][300]u8 }
