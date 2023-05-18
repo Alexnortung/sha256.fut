@@ -16,14 +16,15 @@ def create_message_schedules [n] (message: [n]u8) : []MessageSchedule =
     let schedule = replicate 64 0u32
     in scatter schedule (iota 16) m
   ) schedule_messages
-  let schedules = loop newSchedules = schedules for i in 16..<64 do
-    map (\schedule ->
+  let schedules = loop new_schedules = schedules for i in 16..<64 do
+    let newValues = map (\schedule ->
       let s0 = (rotate_right_unsafe schedule[i-15] 7) ^ (rotate_right_unsafe schedule[i-15] 18) ^ (schedule[i-15] >> 3)
       let s1 = (rotate_right_unsafe schedule[i-2] 17) ^ (rotate_right_unsafe schedule[i-2] 19) ^ (schedule[i-2] >> 10)
       let newValue = schedule[i-16] + s0 + schedule[i-7] + s1
-      -- TODO: avoid copying - maybe use map to get the new values, then scatter the values with scatter2d
-      in (copy schedule) with [i] = newValue
-    ) newSchedules
+      in newValue
+    ) new_schedules
+    let indexes = iota num_chunks |> map (\y -> (y, i))
+    in scatter_2d new_schedules indexes newValues
 
   in schedules
 

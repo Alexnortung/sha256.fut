@@ -14,4 +14,4 @@
 .direnv
 .devenv
 
-lib/github.com/alexnortung/data/
+lib/github.com/alexnortung/sha256.fut/data/
